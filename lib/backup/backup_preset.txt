@@ -1,0 +1,253 @@
+Padding(
+                      padding: const EdgeInsets.all(15.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          InkWell(
+                            onTap: () {
+                              setPresetButton1();
+                            },
+                            child: Container(
+                                height: 40,
+                                width: _width / 4.5,
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                      fit: BoxFit.fitWidth,
+                                      image: AssetImage(_stautsPreset == 1
+                                          ? "assets/image/button-preset/framecolorred.png"
+                                          : "assets/image/button-preset/framenotcolor.png")),
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      margin: EdgeInsets.symmetric(
+                                        vertical: 10,
+                                      ),
+                                      child: Image.asset(
+                                        "assets/image/button-preset/LastPreset.png",
+                                        height: 12,
+                                      ),
+                                    ),
+                                  ],
+                                )),
+                          ),
+                          InkWell(
+                            onTap: () {
+                              setPresetButton1();
+                            },
+                            child: Container(
+                                height: 40,
+                                width: _width / 4.5,
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                      fit: BoxFit.fitWidth,
+                                      image: AssetImage(_stautsPreset == 1
+                                          ? "assets/image/button-preset/framecolorred.png"
+                                          : "assets/image/button-preset/framenotcolor.png")),
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      margin: EdgeInsets.symmetric(
+                                        vertical: 10,
+                                      ),
+                                      child: Image.asset(
+                                        "assets/image/button-preset/Preset1.png",
+                                        height: 12,
+                                      ),
+                                    ),
+                                  ],
+                                )),
+                          ),
+                          InkWell(
+                            onTap: () {
+                              setPresetButton2();
+                            },
+                            child: Container(
+                                height: 40,
+                                width: _width / 4.5,
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                      fit: BoxFit.fitWidth,
+                                      image: AssetImage(_stautsPreset == 2
+                                          ? "assets/image/button-preset/framecolorred.png"
+                                          : "assets/image/button-preset/framenotcolor.png")),
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      margin: EdgeInsets.symmetric(
+                                        vertical: 10,
+                                      ),
+                                      child: Image.asset(
+                                        "assets/image/button-preset/Preset2.png",
+                                        height: 12,
+                                      ),
+                                    ),
+                                  ],
+                                )),
+                          ),
+                          InkWell(
+                            onTap: () {
+                              setPresetButton3();
+                            },
+                            child: Container(
+                                height: 40,
+                                width: _width / 4.5,
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                      fit: BoxFit.fitWidth,
+                                      image: AssetImage(_stautsPreset == 3
+                                          ? "assets/image/button-preset/framecolorred.png"
+                                          : "assets/image/button-preset/framenotcolor.png")),
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      margin: EdgeInsets.symmetric(
+                                        vertical: 10,
+                                      ),
+                                      child: Image.asset(
+                                        "assets/image/button-preset/Preset3.png",
+                                        height: 12,
+                                      ),
+                                    ),
+                                  ],
+                                )),
+                          ),
+
+                          // InkWell(
+                          //   onTap: () {
+                          //     setPresetButton2();
+                          //   },
+                          //   child: Container(
+                          //       height: 40,
+                          //       width: _width / 4.5,
+                          //       decoration: BoxDecoration(
+                          //         image: DecorationImage(
+                          //             fit: BoxFit.fitWidth,
+                          //             image: AssetImage(
+                          //                 "assets/image/button-preset/framebox.png")),
+                          //       ),
+                          //       child: Column(
+                          //         mainAxisAlignment: MainAxisAlignment.center,
+                          //         children: [
+                          //           Stack(
+                          //             children: [
+                          //               Align(
+                          //                 child: Container(
+                          //                   child: Image.asset(
+                          //                     _stautsPreset == 2
+                          //                         ? "assets/image/button-preset/colorred.png"
+                          //                         : "assets/image/button-preset/colorblack.png",
+                          //                     height: 29,
+                          //                   ),
+                          //                 ),
+                          //               ),
+                          //               Align(
+                          //                 child: Container(
+                          //                   margin: EdgeInsets.symmetric(
+                          //                     vertical: 10,
+                          //                   ),
+                          //                   child: Image.asset(
+                          //                     "assets/image/button-preset/Preset2.png",
+                          //                     height: 10,
+                          //                   ),
+                          //                 ),
+                          //               ),
+                          //             ],
+                          //           ),
+                          //         ],
+                          //       )),
+                          // ),
+                          // InkWell(
+                          //   onTap: () {
+                          //     setPresetButton3();
+                          //   },
+                          //   child: Container(
+                          //       height: 40,
+                          //       width: _width / 4.5,
+                          //       decoration: BoxDecoration(
+                          //         image: DecorationImage(
+                          //             fit: BoxFit.fitWidth,
+                          //             image: AssetImage(
+                          //                 "assets/image/button-preset/framebox.png")),
+                          //       ),
+                          //       child: Column(
+                          //         mainAxisAlignment: MainAxisAlignment.center,
+                          //         children: [
+                          //           Stack(
+                          //             children: [
+                          //               Align(
+                          //                 child: Container(
+                          //                   child: Image.asset(
+                          //                     _stautsPreset == 3
+                          //                         ? "assets/image/button-preset/colorred.png"
+                          //                         : "assets/image/button-preset/colorblack.png",
+                          //                     height: 29,
+                          //                   ),
+                          //                 ),
+                          //               ),
+                          //               Align(
+                          //                 child: Container(
+                          //                   margin: EdgeInsets.symmetric(
+                          //                     vertical: 10,
+                          //                   ),
+                          //                   child: Image.asset(
+                          //                     "assets/image/button-preset/Preset3.png",
+                          //                     height: 10,
+                          //                   ),
+                          //                 ),
+                          //               ),
+                          //             ],
+                          //           ),
+                          //         ],
+                          //       )),
+                          // ),
+                          GestureDetector(
+                            onTapDown: ((details) {
+                              print('onTapDown');
+                              resetPresetButton();
+                              setState(() {
+                                _statusbuttonreset = true;
+                              });
+                            }),
+                            onTapUp: (details) {
+                              print('onTapUp');
+                              setState(() {
+                                _statusbuttonreset = false;
+                              });
+                            },
+                            child: Container(
+                                height: 40,
+                                width: _width / 4.5,
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                      fit: BoxFit.fitWidth,
+                                      image: AssetImage(_statusbuttonreset ==
+                                              true
+                                          ? "assets/image/button-preset/framecolorgreen.png"
+                                          : "assets/image/button-preset/framenotcolor.png")),
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      margin: EdgeInsets.symmetric(
+                                        vertical: 10,
+                                      ),
+                                      child: Image.asset(
+                                        "assets/image/button-preset/Reset.png",
+                                        height: 12,
+                                      ),
+                                    ),
+                                  ],
+                                )),
+                          ),
+                        ],
+                      ),
+                    ),

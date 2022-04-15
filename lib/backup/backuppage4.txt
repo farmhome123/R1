@@ -1,0 +1,1731 @@
+import 'dart:convert' show jsonDecode, jsonEncode, utf8;
+
+import 'package:flutter/material.dart';
+import 'package:flutter_blue/flutter_blue.dart';
+import 'package:page_transition/page_transition.dart';
+
+import 'package:projectr1/Navbar.dart';
+import 'package:projectr1/models/valueTune.dart';
+import 'package:projectr1/page1.dart';
+import 'package:projectr1/page10.dart';
+import 'package:projectr1/page2.dart';
+import 'package:projectr1/page3.dart';
+import 'package:projectr1/page5.dart';
+import 'package:projectr1/page6.dart';
+import 'package:projectr1/page7.dart';
+import 'package:projectr1/page8.dart';
+import 'package:projectr1/page9.dart';
+import 'package:projectr1/settingble.dart';
+import 'package:get/get.dart';
+import 'package:projectr1/getx/speedController.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+class page4 extends StatefulWidget {
+  final BluetoothDevice? device;
+  final List<int>? valueTx;
+  final BluetoothCharacteristic? characteristic;
+  final double value1;
+  final double value2;
+  final double value3;
+  final double value4;
+  final double value5;
+  final double value6;
+  final double value7;
+  final double value8;
+  final double value9;
+  const page4(
+      {Key? key,
+      this.valueTx,
+      required this.characteristic,
+      required this.value1,
+      required this.value2,
+      required this.value3,
+      required this.value4,
+      required this.value5,
+      required this.value6,
+      required this.value7,
+      required this.value8,
+      required this.value9,
+      required this.device})
+      : super(key: key);
+
+  @override
+  _page4State createState() => _page4State();
+}
+
+class _page4State extends State<page4> {
+  BluetoothCharacteristic? characteristic;
+  bool statusconnect = false;
+  final double min = 0;
+  final double max = 99;
+  double value1 = 10;
+  double value2 = 20;
+  double value3 = 30;
+  double value4 = 40;
+  double value5 = 50;
+  double value6 = 60;
+  double value7 = 70;
+  double value8 = 80;
+  double value9 = 90;
+  SpeedController speedController = Get.put(SpeedController());
+  int _stautsPreset = 0;
+  bool _statusbuttonreset = false;
+  PresetMode1? _presetMode1;
+  int _modePreset = 0;
+
+  double _lastpresetvalue1 = 10;
+  double _lastpresetvalue2 = 20;
+  double _lastpresetvalue3 = 30;
+  double _lastpresetvalue4 = 40;
+  double _lastpresetvalue5 = 50;
+  double _lastpresetvalue6 = 60;
+  double _lastpresetvalue7 = 70;
+  double _lastpresetvalue8 = 80;
+  double _lastpresetvalue9 = 90;
+
+  @override
+  void _showDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: new Text("Bluetooth"),
+          content: new Text("โปรดเชื่อมต่อบลูทูธ"),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text("OK"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    getStautsPreset();
+    super.initState();
+    setState(() {
+      // value1 = widget.value1;
+      // value2 = widget.value2;
+      // value3 = widget.value3;
+      // value4 = widget.value4;
+      // value5 = widget.value5;
+      // value6 = widget.value6;
+      // value7 = widget.value7;
+      // value8 = widget.value8;
+      // value9 = widget.value9;
+      if (widget.characteristic != null) {
+        _lastpresetvalue1 = widget.value1;
+        _lastpresetvalue2 = widget.value2;
+        _lastpresetvalue3 = widget.value3;
+        _lastpresetvalue4 = widget.value4;
+        _lastpresetvalue5 = widget.value5;
+        _lastpresetvalue6 = widget.value6;
+        _lastpresetvalue7 = widget.value7;
+        _lastpresetvalue8 = widget.value8;
+        _lastpresetvalue9 = widget.value9;
+        characteristic = widget.characteristic;
+      }
+    });
+    statusconnecttion();
+  }
+
+  void statusconnecttion() async {
+    if (widget.device != null) {
+      widget.device!.state.listen((status) {
+        print('######### -------- Status ble ---- > ${status}');
+        if (status == BluetoothDeviceState.connected) {
+          print('connected !!!!!!');
+          setState(() {
+            statusconnect = true;
+          });
+        } else {
+          print('disconnected !!!!!!');
+          setState(() {
+            statusconnect = false;
+          });
+          if (widget.device != null) {
+            widget.device!.disconnect();
+          }
+        }
+      });
+    }
+  }
+
+  void checksavePreset() {
+    if (_modePreset == 0) {
+      savelastPreset();
+    } else if (_modePreset == 1) {
+      savaPreset1();
+    } else if (_modePreset == 2) {
+      savaPreset2();
+    } else if (_modePreset == 3) {
+      savaPreset3();
+    }
+  }
+
+  void savelastPreset() {
+    print("savelastPreset");
+    if (characteristic != null) {
+      widget.characteristic!.write(utf8.encode(
+          'RB${_lastpresetvalue1.toStringAsFixed(0).padLeft(2, '0') + _lastpresetvalue2.toStringAsFixed(0).padLeft(2, '0') + _lastpresetvalue3.toStringAsFixed(0).padLeft(2, '0') + _lastpresetvalue4.toStringAsFixed(0).padLeft(2, '0') + _lastpresetvalue5.toStringAsFixed(0).padLeft(2, '0') + _lastpresetvalue6.toStringAsFixed(0).padLeft(2, '0') + _lastpresetvalue7.toStringAsFixed(0).padLeft(2, '0') + _lastpresetvalue8.toStringAsFixed(0).padLeft(2, '0') + _lastpresetvalue9.toStringAsFixed(0).padLeft(2, '0')}'));
+
+      print(
+          'RB${_lastpresetvalue1.toStringAsFixed(0).padLeft(2, '0') + _lastpresetvalue2.toStringAsFixed(0).padLeft(2, '0') + _lastpresetvalue3.toStringAsFixed(0).padLeft(2, '0') + _lastpresetvalue4.toStringAsFixed(0).padLeft(2, '0') + _lastpresetvalue5.toStringAsFixed(0).padLeft(2, '0') + _lastpresetvalue6.toStringAsFixed(0).padLeft(2, '0') + _lastpresetvalue7.toStringAsFixed(0).padLeft(2, '0') + _lastpresetvalue8.toStringAsFixed(0).padLeft(2, '0') + _lastpresetvalue9.toStringAsFixed(0).padLeft(2, '0')}');
+    }
+  }
+
+  void savaPreset1() async {
+    final prefs = await SharedPreferences.getInstance();
+    print("savaPreset1");
+    prefs.setString("preset1_v1", value1.toString());
+    prefs.setString("preset1_v2", value2.toString());
+    prefs.setString("preset1_v3", value3.toString());
+    prefs.setString("preset1_v4", value4.toString());
+    prefs.setString("preset1_v5", value5.toString());
+    prefs.setString("preset1_v6", value6.toString());
+    prefs.setString("preset1_v7", value7.toString());
+    prefs.setString("preset1_v8", value8.toString());
+    prefs.setString("preset1_v9", value9.toString());
+
+    if (characteristic != null) {
+      widget.characteristic!.write(utf8.encode(
+          'RB${value1.toStringAsFixed(0).padLeft(2, '0') + value2.toStringAsFixed(0).padLeft(2, '0') + value3.toStringAsFixed(0).padLeft(2, '0') + value4.toStringAsFixed(0).padLeft(2, '0') + value5.toStringAsFixed(0).padLeft(2, '0') + value6.toStringAsFixed(0).padLeft(2, '0') + value7.toStringAsFixed(0).padLeft(2, '0') + value8.toStringAsFixed(0).padLeft(2, '0') + value9.toStringAsFixed(0).padLeft(2, '0')}'));
+
+      print(
+          'RB${value1.toStringAsFixed(0).padLeft(2, '0') + value2.toStringAsFixed(0).padLeft(2, '0') + value3.toStringAsFixed(0).padLeft(2, '0') + value4.toStringAsFixed(0).padLeft(2, '0') + value5.toStringAsFixed(0).padLeft(2, '0') + value6.toStringAsFixed(0).padLeft(2, '0') + value7.toStringAsFixed(0).padLeft(2, '0') + value8.toStringAsFixed(0).padLeft(2, '0') + value9.toStringAsFixed(0).padLeft(2, '0')}');
+    }
+  }
+
+  void savaPreset2() async {
+    final prefs = await SharedPreferences.getInstance();
+    print("savaPreset2");
+    prefs.setString("preset2_v1", value1.toString());
+    prefs.setString("preset2_v2", value2.toString());
+    prefs.setString("preset2_v3", value3.toString());
+    prefs.setString("preset2_v4", value4.toString());
+    prefs.setString("preset2_v5", value5.toString());
+    prefs.setString("preset2_v6", value6.toString());
+    prefs.setString("preset2_v7", value7.toString());
+    prefs.setString("preset2_v8", value8.toString());
+    prefs.setString("preset2_v9", value9.toString());
+    if (characteristic != null) {
+      widget.characteristic!.write(utf8.encode(
+          'RB${value1.toStringAsFixed(0).padLeft(2, '0') + value2.toStringAsFixed(0).padLeft(2, '0') + value3.toStringAsFixed(0).padLeft(2, '0') + value4.toStringAsFixed(0).padLeft(2, '0') + value5.toStringAsFixed(0).padLeft(2, '0') + value6.toStringAsFixed(0).padLeft(2, '0') + value7.toStringAsFixed(0).padLeft(2, '0') + value8.toStringAsFixed(0).padLeft(2, '0') + value9.toStringAsFixed(0).padLeft(2, '0')}'));
+
+      print(
+          'RB${value1.toStringAsFixed(0).padLeft(2, '0') + value2.toStringAsFixed(0).padLeft(2, '0') + value3.toStringAsFixed(0).padLeft(2, '0') + value4.toStringAsFixed(0).padLeft(2, '0') + value5.toStringAsFixed(0).padLeft(2, '0') + value6.toStringAsFixed(0).padLeft(2, '0') + value7.toStringAsFixed(0).padLeft(2, '0') + value8.toStringAsFixed(0).padLeft(2, '0') + value9.toStringAsFixed(0).padLeft(2, '0')}');
+    }
+  }
+
+  void savaPreset3() async {
+    final prefs = await SharedPreferences.getInstance();
+    print("savaPreset1");
+    prefs.setString("preset3_v1", value1.toString());
+    prefs.setString("preset3_v2", value2.toString());
+    prefs.setString("preset3_v3", value3.toString());
+    prefs.setString("preset3_v4", value4.toString());
+    prefs.setString("preset3_v5", value5.toString());
+    prefs.setString("preset3_v6", value6.toString());
+    prefs.setString("preset3_v7", value7.toString());
+    prefs.setString("preset3_v8", value8.toString());
+    prefs.setString("preset3_v9", value9.toString());
+
+    if (characteristic != null) {
+      widget.characteristic!.write(utf8.encode(
+          'RB${value1.toStringAsFixed(0).padLeft(2, '0') + value2.toStringAsFixed(0).padLeft(2, '0') + value3.toStringAsFixed(0).padLeft(2, '0') + value4.toStringAsFixed(0).padLeft(2, '0') + value5.toStringAsFixed(0).padLeft(2, '0') + value6.toStringAsFixed(0).padLeft(2, '0') + value7.toStringAsFixed(0).padLeft(2, '0') + value8.toStringAsFixed(0).padLeft(2, '0') + value9.toStringAsFixed(0).padLeft(2, '0')}'));
+
+      print(
+          'RB${value1.toStringAsFixed(0).padLeft(2, '0') + value2.toStringAsFixed(0).padLeft(2, '0') + value3.toStringAsFixed(0).padLeft(2, '0') + value4.toStringAsFixed(0).padLeft(2, '0') + value5.toStringAsFixed(0).padLeft(2, '0') + value6.toStringAsFixed(0).padLeft(2, '0') + value7.toStringAsFixed(0).padLeft(2, '0') + value8.toStringAsFixed(0).padLeft(2, '0') + value9.toStringAsFixed(0).padLeft(2, '0')}');
+    }
+  }
+
+  void resetLastPreset() async {
+    print("resetLastPreset");
+
+    setState(() {
+      _lastpresetvalue1 = 10;
+      _lastpresetvalue2 = 20;
+      _lastpresetvalue3 = 30;
+      _lastpresetvalue4 = 40;
+      _lastpresetvalue5 = 50;
+      _lastpresetvalue6 = 60;
+      _lastpresetvalue7 = 70;
+      _lastpresetvalue8 = 80;
+      _lastpresetvalue9 = 90;
+      value1 = 10;
+      value2 = 20;
+      value3 = 30;
+      value4 = 40;
+      value5 = 50;
+      value6 = 60;
+      value7 = 70;
+      value8 = 80;
+      value9 = 90;
+    });
+    // setLastPresetButton();
+
+    if (characteristic != null) {
+      widget.characteristic!.write(utf8.encode(
+          'RB${value1.toStringAsFixed(0).padLeft(2, '0') + value2.toStringAsFixed(0).padLeft(2, '0') + value3.toStringAsFixed(0).padLeft(2, '0') + value4.toStringAsFixed(0).padLeft(2, '0') + value5.toStringAsFixed(0).padLeft(2, '0') + value6.toStringAsFixed(0).padLeft(2, '0') + value7.toStringAsFixed(0).padLeft(2, '0') + value8.toStringAsFixed(0).padLeft(2, '0') + value9.toStringAsFixed(0).padLeft(2, '0')}'));
+    }
+  }
+
+  void resetPreset1() async {
+    final prefs = await SharedPreferences.getInstance();
+    print("resetPreset1");
+    // prefs.remove("preset1_v1");
+    // prefs.remove("preset1_v2");
+    // prefs.remove("preset1_v3");
+    // prefs.remove("preset1_v4");
+    // prefs.remove("preset1_v5");
+    // prefs.remove("preset1_v6");
+    // prefs.remove("preset1_v7");
+    // prefs.remove("preset1_v8");
+    // prefs.remove("preset1_v9");
+    prefs.setString("preset1_v1", 10.toString());
+    prefs.setString("preset1_v2", 20.toString());
+    prefs.setString("preset1_v3", 30.toString());
+    prefs.setString("preset1_v4", 40.toString());
+    prefs.setString("preset1_v5", 50.toString());
+    prefs.setString("preset1_v6", 60.toString());
+    prefs.setString("preset1_v7", 70.toString());
+    prefs.setString("preset1_v8", 80.toString());
+    prefs.setString("preset1_v9", 90.toString());
+    setState(() {
+      value1 = 10;
+      value2 = 20;
+      value3 = 30;
+      value4 = 40;
+      value5 = 50;
+      value6 = 60;
+      value7 = 70;
+      value8 = 80;
+      value9 = 90;
+    });
+
+    if (characteristic != null) {
+      widget.characteristic!.write(utf8.encode(
+          'RB${value1.toStringAsFixed(0).padLeft(2, '0') + value2.toStringAsFixed(0).padLeft(2, '0') + value3.toStringAsFixed(0).padLeft(2, '0') + value4.toStringAsFixed(0).padLeft(2, '0') + value5.toStringAsFixed(0).padLeft(2, '0') + value6.toStringAsFixed(0).padLeft(2, '0') + value7.toStringAsFixed(0).padLeft(2, '0') + value8.toStringAsFixed(0).padLeft(2, '0') + value9.toStringAsFixed(0).padLeft(2, '0')}'));
+    }
+  }
+
+  void resetPreset2() async {
+    final prefs = await SharedPreferences.getInstance();
+    print("resetPreset2");
+    // prefs.remove("preset2_v1");
+    // prefs.remove("preset2_v2");
+    // prefs.remove("preset2_v3");
+    // prefs.remove("preset2_v4");
+    // prefs.remove("preset2_v5");
+    // prefs.remove("preset2_v6");
+    // prefs.remove("preset2_v7");
+    // prefs.remove("preset2_v8");
+    // prefs.remove("preset2_v9");
+    prefs.setString("preset2_v1", 10.toString());
+    prefs.setString("preset2_v2", 20.toString());
+    prefs.setString("preset2_v3", 30.toString());
+    prefs.setString("preset2_v4", 40.toString());
+    prefs.setString("preset2_v5", 50.toString());
+    prefs.setString("preset2_v6", 60.toString());
+    prefs.setString("preset2_v7", 70.toString());
+    prefs.setString("preset2_v8", 80.toString());
+    prefs.setString("preset2_v9", 90.toString());
+    setState(() {
+      value1 = 10;
+      value2 = 20;
+      value3 = 30;
+      value4 = 40;
+      value5 = 50;
+      value6 = 60;
+      value7 = 70;
+      value8 = 80;
+      value9 = 90;
+    });
+    if (characteristic != null) {
+      widget.characteristic!.write(utf8.encode(
+          'RB${value1.toStringAsFixed(0).padLeft(2, '0') + value2.toStringAsFixed(0).padLeft(2, '0') + value3.toStringAsFixed(0).padLeft(2, '0') + value4.toStringAsFixed(0).padLeft(2, '0') + value5.toStringAsFixed(0).padLeft(2, '0') + value6.toStringAsFixed(0).padLeft(2, '0') + value7.toStringAsFixed(0).padLeft(2, '0') + value8.toStringAsFixed(0).padLeft(2, '0') + value9.toStringAsFixed(0).padLeft(2, '0')}'));
+    }
+  }
+
+  void resetPreset3() async {
+    final prefs = await SharedPreferences.getInstance();
+    print("resetPreset3");
+    // prefs.remove("preset3_v1");
+    // prefs.remove("preset3_v2");
+    // prefs.remove("preset3_v3");
+    // prefs.remove("preset3_v4");
+    // prefs.remove("preset3_v5");
+    // prefs.remove("preset3_v6");
+    // prefs.remove("preset3_v7");
+    // prefs.remove("preset3_v8");
+    // prefs.remove("preset3_v9");
+    prefs.setString("preset3_v1", 10.toString());
+    prefs.setString("preset3_v2", 20.toString());
+    prefs.setString("preset3_v3", 30.toString());
+    prefs.setString("preset3_v4", 40.toString());
+    prefs.setString("preset3_v5", 50.toString());
+    prefs.setString("preset3_v6", 60.toString());
+    prefs.setString("preset3_v7", 70.toString());
+    prefs.setString("preset3_v8", 80.toString());
+    prefs.setString("preset3_v9", 90.toString());
+    setState(() {
+      value1 = 10;
+      value2 = 20;
+      value3 = 30;
+      value4 = 40;
+      value5 = 50;
+      value6 = 60;
+      value7 = 70;
+      value8 = 80;
+      value9 = 90;
+    });
+    if (characteristic != null) {
+      widget.characteristic!.write(utf8.encode(
+          'RB${value1.toStringAsFixed(0).padLeft(2, '0') + value2.toStringAsFixed(0).padLeft(2, '0') + value3.toStringAsFixed(0).padLeft(2, '0') + value4.toStringAsFixed(0).padLeft(2, '0') + value5.toStringAsFixed(0).padLeft(2, '0') + value6.toStringAsFixed(0).padLeft(2, '0') + value7.toStringAsFixed(0).padLeft(2, '0') + value8.toStringAsFixed(0).padLeft(2, '0') + value9.toStringAsFixed(0).padLeft(2, '0')}'));
+    }
+  }
+
+  void getStautsPreset() async {
+    final prefs = await SharedPreferences.getInstance();
+    var prefs_stautsPreset = await prefs.getString('stautsPreset');
+    if (prefs_stautsPreset != null) {
+      setState(() {
+        _stautsPreset = int.parse(prefs_stautsPreset);
+      });
+    }
+    if (_stautsPreset == 0) {
+      setLastPresetButton();
+    } else if (_stautsPreset == 1) {
+      setPresetButton1();
+    } else if (_stautsPreset == 2) {
+      setPresetButton2();
+    } else if (_stautsPreset == 3) {
+      setPresetButton3();
+    }
+  }
+
+  void setLastPresetButton() async {
+    print("ModePreset == 0");
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('stautsPreset', 0.toString());
+    setState(() {
+      _modePreset = 0;
+      _stautsPreset = 0;
+      value1 = _lastpresetvalue1;
+      value2 = _lastpresetvalue2;
+      value3 = _lastpresetvalue3;
+      value4 = _lastpresetvalue4;
+      value5 = _lastpresetvalue5;
+      value6 = _lastpresetvalue6;
+      value7 = _lastpresetvalue7;
+      value8 = _lastpresetvalue8;
+      value9 = _lastpresetvalue9;
+    });
+  }
+
+  void setPresetButton1() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('stautsPreset', 1.toString());
+    print("ModePreset == 1");
+    var _valueP1 = await prefs.getString("preset1_v1");
+    var _valueP2 = await prefs.getString("preset1_v2");
+    var _valueP3 = await prefs.getString("preset1_v3");
+    var _valueP4 = await prefs.getString("preset1_v4");
+    var _valueP5 = await prefs.getString("preset1_v5");
+    var _valueP6 = await prefs.getString("preset1_v6");
+    var _valueP7 = await prefs.getString("preset1_v7");
+    var _valueP8 = await prefs.getString("preset1_v8");
+    var _valueP9 = await prefs.getString("preset1_v9");
+    // print(_tuneModel?.preset[1].value1);
+    // print(jsonEncode(_tuneModel?.preset[1]));
+    setState(() {
+      _modePreset = 1;
+      _stautsPreset = 1;
+      value1 = _valueP1 != null ? double.parse(_valueP1.toString()) : 10;
+      value2 = _valueP2 != null ? double.parse(_valueP2.toString()) : 20;
+      value3 = _valueP3 != null ? double.parse(_valueP3.toString()) : 30;
+      value4 = _valueP4 != null ? double.parse(_valueP4.toString()) : 40;
+      value5 = _valueP5 != null ? double.parse(_valueP5.toString()) : 50;
+      value6 = _valueP6 != null ? double.parse(_valueP6.toString()) : 60;
+      value7 = _valueP7 != null ? double.parse(_valueP7.toString()) : 70;
+      value8 = _valueP8 != null ? double.parse(_valueP8.toString()) : 80;
+      value9 = _valueP9 != null ? double.parse(_valueP9.toString()) : 90;
+    });
+  }
+
+  void setPresetButton2() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('stautsPreset', 2.toString());
+    print("ModePreset == 2");
+    var _valueP1 = await prefs.getString("preset2_v1");
+    var _valueP2 = await prefs.getString("preset2_v2");
+    var _valueP3 = await prefs.getString("preset2_v3");
+    var _valueP4 = await prefs.getString("preset2_v4");
+    var _valueP5 = await prefs.getString("preset2_v5");
+    var _valueP6 = await prefs.getString("preset2_v6");
+    var _valueP7 = await prefs.getString("preset2_v7");
+    var _valueP8 = await prefs.getString("preset2_v8");
+    var _valueP9 = await prefs.getString("preset2_v9");
+    setState(() {
+      _modePreset = 2;
+      _stautsPreset = 2;
+
+      value1 = _valueP1 != null ? double.parse(_valueP1.toString()) : 10;
+      value2 = _valueP2 != null ? double.parse(_valueP2.toString()) : 20;
+      value3 = _valueP3 != null ? double.parse(_valueP3.toString()) : 30;
+      value4 = _valueP4 != null ? double.parse(_valueP4.toString()) : 40;
+      value5 = _valueP5 != null ? double.parse(_valueP5.toString()) : 50;
+      value6 = _valueP6 != null ? double.parse(_valueP6.toString()) : 60;
+      value7 = _valueP7 != null ? double.parse(_valueP7.toString()) : 70;
+      value8 = _valueP8 != null ? double.parse(_valueP8.toString()) : 80;
+      value9 = _valueP9 != null ? double.parse(_valueP9.toString()) : 90;
+    });
+  }
+
+  void setPresetButton3() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('stautsPreset', 3.toString());
+    print("ModePreset == 3");
+    var _valueP1 = await prefs.getString("preset3_v1");
+    var _valueP2 = await prefs.getString("preset3_v2");
+    var _valueP3 = await prefs.getString("preset3_v3");
+    var _valueP4 = await prefs.getString("preset3_v4");
+    var _valueP5 = await prefs.getString("preset3_v5");
+    var _valueP6 = await prefs.getString("preset3_v6");
+    var _valueP7 = await prefs.getString("preset3_v7");
+    var _valueP8 = await prefs.getString("preset3_v8");
+    var _valueP9 = await prefs.getString("preset3_v9");
+    setState(() {
+      _modePreset = 3;
+      _stautsPreset = 3;
+      value1 = _valueP1 != null ? double.parse(_valueP1.toString()) : 10;
+      value2 = _valueP2 != null ? double.parse(_valueP2.toString()) : 20;
+      value3 = _valueP3 != null ? double.parse(_valueP3.toString()) : 30;
+      value4 = _valueP4 != null ? double.parse(_valueP4.toString()) : 40;
+      value5 = _valueP5 != null ? double.parse(_valueP5.toString()) : 50;
+      value6 = _valueP6 != null ? double.parse(_valueP6.toString()) : 60;
+      value7 = _valueP7 != null ? double.parse(_valueP7.toString()) : 70;
+      value8 = _valueP8 != null ? double.parse(_valueP8.toString()) : 80;
+      value9 = _valueP9 != null ? double.parse(_valueP9.toString()) : 90;
+    });
+  }
+
+  void resetPresetButton() {
+    if (_modePreset == 0) {
+      resetLastPreset();
+    } else if (_modePreset == 1) {
+      resetPreset1();
+    } else if (_modePreset == 2) {
+      resetPreset2();
+    } else if (_modePreset == 3) {
+      resetPreset3();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var _width = MediaQuery.of(context).size.width;
+    var _height = MediaQuery.of(context).size.height;
+    return Scaffold(
+      drawer: NavBar(),
+      appBar: AppBar(
+        toolbarHeight: 70,
+        backgroundColor: Colors.black,
+        title: Image.asset(
+          'lib/img/logo.png',
+          height: 200,
+          width: 200,
+        ),
+        centerTitle: true,
+        actions: [
+          Stack(
+            alignment: Alignment.centerLeft,
+            children: [
+              IconButton(
+                icon: Icon(
+                  Icons.bluetooth,
+                  size: 30,
+                ),
+                onPressed: () {
+                  // _showDialog(context);
+                  Navigator.push(
+                      context,
+                      PageTransition(
+                        type: PageTransitionType.fade,
+                        child: SettingBle(),
+                      ));
+                },
+              ),
+              Icon(Icons.circle,
+                  color: statusconnect == false ? Colors.red : Colors.green,
+                  size: 10),
+            ],
+          ),
+        ],
+      ),
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            fit: BoxFit.fitWidth,
+            image: AssetImage("lib/itemol/BGJPG.jpg"),
+          ),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Container(
+              height: 60,
+              child: Container(
+                  width: 300,
+                  margin: EdgeInsets.only(top: 15),
+                  decoration: BoxDecoration(
+                    border: Border(
+                        top: BorderSide(color: Colors.red.shade900),
+                        bottom: BorderSide(color: Colors.red.shade900)),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "โหมดการจูนกราฟ",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontFamily: 'Kanit',
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.start,
+                      ),
+                    ],
+                  )),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Container(
+              padding: EdgeInsets.only(left: 10, right: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'ตำแหน่งคันเร่งช่วงต้น',
+                    style: TextStyle(
+                        color: Colors.white, fontSize: 13, fontFamily: 'Kanit'),
+                  ),
+                  Text(
+                    'ตำแหน่งคันเร่งช่วงปลาย',
+                    style: TextStyle(
+                        color: Colors.white, fontSize: 13, fontFamily: 'Kanit'),
+                  ),
+                ],
+              ),
+            ),
+            Flexible(
+              fit: FlexFit.tight,
+              flex: 3,
+              child: Container(
+                padding: EdgeInsets.only(top: 5),
+                child: Wrap(
+                  children: [
+                    Container(
+                      height: 200,
+                      child: Wrap(
+                        children: [
+                          SliderTheme(
+                            data: SliderTheme.of(context).copyWith(
+                              trackHeight: 15,
+                              thumbShape: SliderComponentShape.noOverlay,
+                              overlayShape: SliderComponentShape.noOverlay,
+                              activeTrackColor: Colors.red[700],
+                              inactiveTrackColor: Colors.grey[800],
+                            ),
+                            child: Container(
+                              height: 270,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          RotatedBox(
+                                            quarterTurns: 3,
+                                            child: Column(
+                                              children: [
+                                                ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(40),
+                                                  child: Slider(
+                                                    value: value1,
+                                                    activeColor: Colors.white,
+                                                    min: min,
+                                                    max: max,
+                                                    divisions: 99,
+                                                    label: value1
+                                                        .round()
+                                                        .toString(),
+                                                    onChanged: (value1) {
+                                                      if (value1 <= 50) {
+                                                        setState(() {
+                                                          this.value1 = value1;
+                                                        });
+                                                      }
+                                                    },
+                                                    onChangeEnd: (value1) {
+                                                      checksavePreset();
+                                                      if (characteristic !=
+                                                          null) {
+                                                        widget.characteristic!
+                                                            .write(utf8.encode(
+                                                                'RB${value1.toStringAsFixed(0).padLeft(2, '0') + value2.toStringAsFixed(0).padLeft(2, '0') + value3.toStringAsFixed(0).padLeft(2, '0') + value4.toStringAsFixed(0).padLeft(2, '0') + value5.toStringAsFixed(0).padLeft(2, '0') + value6.toStringAsFixed(0).padLeft(2, '0') + value7.toStringAsFixed(0).padLeft(2, '0') + value8.toStringAsFixed(0).padLeft(2, '0') + value9.toStringAsFixed(0).padLeft(2, '0')}'));
+
+                                                        print(
+                                                            'RB${value1.toStringAsFixed(0).padLeft(2, '0') + value2.toStringAsFixed(0).padLeft(2, '0') + value3.toStringAsFixed(0).padLeft(2, '0') + value4.toStringAsFixed(0).padLeft(2, '0') + value5.toStringAsFixed(0).padLeft(2, '0') + value6.toStringAsFixed(0).padLeft(2, '0') + value7.toStringAsFixed(0).padLeft(2, '0') + value8.toStringAsFixed(0).padLeft(2, '0') + value9.toStringAsFixed(0).padLeft(2, '0')}');
+                                                      }
+                                                    },
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height: 10,
+                                          ),
+                                          //แท่ง1
+                                          Text(
+                                            '${value1.toInt()}',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 12,
+                                              fontFamily: 'ethnocentric',
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height: 30,
+                                          )
+                                        ],
+                                      ),
+                                      Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          RotatedBox(
+                                            quarterTurns: 7,
+                                            child: Column(
+                                              children: [
+                                                ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(40),
+                                                  child: Slider(
+                                                    value: value2,
+                                                    activeColor: Colors.white,
+                                                    min: min,
+                                                    max: max,
+                                                    divisions: 99,
+                                                    label: value2
+                                                        .round()
+                                                        .toString(),
+                                                    onChanged: (value2) =>
+                                                        setState(() => this
+                                                            .value2 = value2),
+                                                    onChangeEnd: (value2) {
+                                                      checksavePreset();
+                                                      if (characteristic !=
+                                                          null) {
+                                                        widget.characteristic!
+                                                            .write(utf8.encode(
+                                                                'RB${value1.toStringAsFixed(0).padLeft(2, '0') + value2.toStringAsFixed(0).padLeft(2, '0') + value3.toStringAsFixed(0).padLeft(2, '0') + value4.toStringAsFixed(0).padLeft(2, '0') + value5.toStringAsFixed(0).padLeft(2, '0') + value6.toStringAsFixed(0).padLeft(2, '0') + value7.toStringAsFixed(0).padLeft(2, '0') + value8.toStringAsFixed(0).padLeft(2, '0') + value9.toStringAsFixed(0).padLeft(2, '0')}'));
+
+                                                        print(
+                                                            'RB${value1.toStringAsFixed(0).padLeft(2, '0') + value2.toStringAsFixed(0).padLeft(2, '0') + value3.toStringAsFixed(0).padLeft(2, '0') + value4.toStringAsFixed(0).padLeft(2, '0') + value5.toStringAsFixed(0).padLeft(2, '0') + value6.toStringAsFixed(0).padLeft(2, '0') + value7.toStringAsFixed(0).padLeft(2, '0') + value8.toStringAsFixed(0).padLeft(2, '0') + value9.toStringAsFixed(0).padLeft(2, '0')}');
+                                                      }
+                                                    },
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height: 10,
+                                          ),
+                                          Text(
+                                            '${value2.toInt()}',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 12,
+                                              fontFamily: 'ethnocentric',
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height: 30,
+                                          )
+                                        ],
+                                      ),
+                                      Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          RotatedBox(
+                                            quarterTurns: 3,
+                                            child: Column(
+                                              children: [
+                                                ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(40),
+                                                  child: Slider(
+                                                    value: value3,
+                                                    activeColor: Colors.white,
+                                                    min: min,
+                                                    max: max,
+                                                    divisions: 99,
+                                                    label: value3
+                                                        .round()
+                                                        .toString(),
+                                                    onChanged: (value3) =>
+                                                        setState(() => this
+                                                            .value3 = value3),
+                                                    onChangeEnd: (value3) {
+                                                      checksavePreset();
+                                                      if (characteristic !=
+                                                          null) {
+                                                        widget.characteristic!
+                                                            .write(utf8.encode(
+                                                                'RB${value1.toStringAsFixed(0).padLeft(2, '0') + value2.toStringAsFixed(0).padLeft(2, '0') + value3.toStringAsFixed(0).padLeft(2, '0') + value4.toStringAsFixed(0).padLeft(2, '0') + value5.toStringAsFixed(0).padLeft(2, '0') + value6.toStringAsFixed(0).padLeft(2, '0') + value7.toStringAsFixed(0).padLeft(2, '0') + value8.toStringAsFixed(0).padLeft(2, '0') + value9.toStringAsFixed(0).padLeft(2, '0')}'));
+
+                                                        print(
+                                                            'RB${value1.toStringAsFixed(0).padLeft(2, '0') + value2.toStringAsFixed(0).padLeft(2, '0') + value3.toStringAsFixed(0).padLeft(2, '0') + value4.toStringAsFixed(0).padLeft(2, '0') + value5.toStringAsFixed(0).padLeft(2, '0') + value6.toStringAsFixed(0).padLeft(2, '0') + value7.toStringAsFixed(0).padLeft(2, '0') + value8.toStringAsFixed(0).padLeft(2, '0') + value9.toStringAsFixed(0).padLeft(2, '0')}');
+                                                      }
+                                                    },
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height: 10,
+                                          ),
+                                          Text(
+                                            '${value3.toInt()}',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 12,
+                                              fontFamily: 'ethnocentric',
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height: 30,
+                                          )
+                                        ],
+                                      ),
+                                      Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          RotatedBox(
+                                            quarterTurns: 3,
+                                            child: Column(
+                                              children: [
+                                                ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(40),
+                                                  child: Slider(
+                                                    value: value4,
+                                                    activeColor: Colors.white,
+                                                    min: min,
+                                                    max: max,
+                                                    divisions: 99,
+                                                    label: value4
+                                                        .round()
+                                                        .toString(),
+                                                    onChanged: (value4) =>
+                                                        setState(() => this
+                                                            .value4 = value4),
+                                                    onChangeEnd: (value4) {
+                                                      checksavePreset();
+                                                      if (characteristic !=
+                                                          null) {
+                                                        widget.characteristic!
+                                                            .write(utf8.encode(
+                                                                'RB${value1.toStringAsFixed(0).padLeft(2, '0') + value2.toStringAsFixed(0).padLeft(2, '0') + value3.toStringAsFixed(0).padLeft(2, '0') + value4.toStringAsFixed(0).padLeft(2, '0') + value5.toStringAsFixed(0).padLeft(2, '0') + value6.toStringAsFixed(0).padLeft(2, '0') + value7.toStringAsFixed(0).padLeft(2, '0') + value8.toStringAsFixed(0).padLeft(2, '0') + value9.toStringAsFixed(0).padLeft(2, '0')}'));
+
+                                                        print(
+                                                            'RB${value1.toStringAsFixed(0).padLeft(2, '0') + value2.toStringAsFixed(0).padLeft(2, '0') + value3.toStringAsFixed(0).padLeft(2, '0') + value4.toStringAsFixed(0).padLeft(2, '0') + value5.toStringAsFixed(0).padLeft(2, '0') + value6.toStringAsFixed(0).padLeft(2, '0') + value7.toStringAsFixed(0).padLeft(2, '0') + value8.toStringAsFixed(0).padLeft(2, '0') + value9.toStringAsFixed(0).padLeft(2, '0')}');
+                                                      }
+                                                    },
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height: 10,
+                                          ),
+                                          Text(
+                                            '${value4.toInt()}',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 12,
+                                              fontFamily: 'ethnocentric',
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height: 30,
+                                          )
+                                        ],
+                                      ),
+                                      Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          RotatedBox(
+                                            quarterTurns: 3,
+                                            child: Column(
+                                              children: [
+                                                ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(40),
+                                                  child: Slider(
+                                                    value: value5,
+                                                    activeColor: Colors.white,
+                                                    min: min,
+                                                    max: max,
+                                                    divisions: 99,
+                                                    label: value5
+                                                        .round()
+                                                        .toString(),
+                                                    onChanged: (value5) =>
+                                                        setState(() => this
+                                                            .value5 = value5),
+                                                    onChangeEnd: (value5) {
+                                                      checksavePreset();
+                                                      if (characteristic !=
+                                                          null) {
+                                                        widget.characteristic!
+                                                            .write(utf8.encode(
+                                                                'RB${value1.toStringAsFixed(0).padLeft(2, '0') + value2.toStringAsFixed(0).padLeft(2, '0') + value3.toStringAsFixed(0).padLeft(2, '0') + value4.toStringAsFixed(0).padLeft(2, '0') + value5.toStringAsFixed(0).padLeft(2, '0') + value6.toStringAsFixed(0).padLeft(2, '0') + value7.toStringAsFixed(0).padLeft(2, '0') + value8.toStringAsFixed(0).padLeft(2, '0') + value9.toStringAsFixed(0).padLeft(2, '0')}'));
+
+                                                        print(
+                                                            'RB${value1.toStringAsFixed(0).padLeft(2, '0') + value2.toStringAsFixed(0).padLeft(2, '0') + value3.toStringAsFixed(0).padLeft(2, '0') + value4.toStringAsFixed(0).padLeft(2, '0') + value5.toStringAsFixed(0).padLeft(2, '0') + value6.toStringAsFixed(0).padLeft(2, '0') + value7.toStringAsFixed(0).padLeft(2, '0') + value8.toStringAsFixed(0).padLeft(2, '0') + value9.toStringAsFixed(0).padLeft(2, '0')}');
+                                                      }
+                                                    },
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height: 10,
+                                          ),
+                                          Text(
+                                            '${value5.toInt()}',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 12,
+                                              fontFamily: 'ethnocentric',
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height: 30,
+                                          )
+                                        ],
+                                      ),
+                                      Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          RotatedBox(
+                                            quarterTurns: 3,
+                                            child: Column(
+                                              children: [
+                                                ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(40),
+                                                  child: Slider(
+                                                    value: value6,
+                                                    activeColor: Colors.white,
+                                                    min: min,
+                                                    max: max,
+                                                    divisions: 99,
+                                                    label: value6
+                                                        .round()
+                                                        .toString(),
+                                                    onChanged: (value6) =>
+                                                        setState(() => this
+                                                            .value6 = value6),
+                                                    onChangeEnd: (value6) {
+                                                      checksavePreset();
+                                                      if (characteristic !=
+                                                          null) {
+                                                        widget.characteristic!
+                                                            .write(utf8.encode(
+                                                                'RB${value1.toStringAsFixed(0).padLeft(2, '0') + value2.toStringAsFixed(0).padLeft(2, '0') + value3.toStringAsFixed(0).padLeft(2, '0') + value4.toStringAsFixed(0).padLeft(2, '0') + value5.toStringAsFixed(0).padLeft(2, '0') + value6.toStringAsFixed(0).padLeft(2, '0') + value7.toStringAsFixed(0).padLeft(2, '0') + value8.toStringAsFixed(0).padLeft(2, '0') + value9.toStringAsFixed(0).padLeft(2, '0')}'));
+
+                                                        print(
+                                                            'RB${value1.toStringAsFixed(0).padLeft(2, '0') + value2.toStringAsFixed(0).padLeft(2, '0') + value3.toStringAsFixed(0).padLeft(2, '0') + value4.toStringAsFixed(0).padLeft(2, '0') + value5.toStringAsFixed(0).padLeft(2, '0') + value6.toStringAsFixed(0).padLeft(2, '0') + value7.toStringAsFixed(0).padLeft(2, '0') + value8.toStringAsFixed(0).padLeft(2, '0') + value9.toStringAsFixed(0).padLeft(2, '0')}');
+                                                      }
+                                                    },
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height: 10,
+                                          ),
+                                          Text(
+                                            '${value6.toInt()}',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 12,
+                                              fontFamily: 'ethnocentric',
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height: 30,
+                                          )
+                                        ],
+                                      ),
+                                      Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          RotatedBox(
+                                            quarterTurns: 3,
+                                            child: Column(
+                                              children: [
+                                                ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(40),
+                                                  child: Slider(
+                                                    value: value7,
+                                                    activeColor: Colors.white,
+                                                    min: min,
+                                                    max: max,
+                                                    divisions: 99,
+                                                    label: value7
+                                                        .round()
+                                                        .toString(),
+                                                    onChanged: (value7) =>
+                                                        setState(() => this
+                                                            .value7 = value7),
+                                                    onChangeEnd: (value7) {
+                                                      checksavePreset();
+                                                      if (characteristic !=
+                                                          null) {
+                                                        widget.characteristic!
+                                                            .write(utf8.encode(
+                                                                'RB${value1.toStringAsFixed(0).padLeft(2, '0') + value2.toStringAsFixed(0).padLeft(2, '0') + value3.toStringAsFixed(0).padLeft(2, '0') + value4.toStringAsFixed(0).padLeft(2, '0') + value5.toStringAsFixed(0).padLeft(2, '0') + value6.toStringAsFixed(0).padLeft(2, '0') + value7.toStringAsFixed(0).padLeft(2, '0') + value8.toStringAsFixed(0).padLeft(2, '0') + value9.toStringAsFixed(0).padLeft(2, '0')}'));
+
+                                                        print(
+                                                            'RB${value1.toStringAsFixed(0).padLeft(2, '0') + value2.toStringAsFixed(0).padLeft(2, '0') + value3.toStringAsFixed(0).padLeft(2, '0') + value4.toStringAsFixed(0).padLeft(2, '0') + value5.toStringAsFixed(0).padLeft(2, '0') + value6.toStringAsFixed(0).padLeft(2, '0') + value7.toStringAsFixed(0).padLeft(2, '0') + value8.toStringAsFixed(0).padLeft(2, '0') + value9.toStringAsFixed(0).padLeft(2, '0')}');
+                                                      }
+                                                    },
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height: 10,
+                                          ),
+                                          Text(
+                                            '${value7.toInt()}',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 12,
+                                              fontFamily: 'ethnocentric',
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height: 30,
+                                          )
+                                        ],
+                                      ),
+                                      Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          RotatedBox(
+                                            quarterTurns: 3,
+                                            child: Column(
+                                              children: [
+                                                ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(40),
+                                                  child: Slider(
+                                                    value: value8,
+                                                    activeColor: Colors.white,
+                                                    min: min,
+                                                    max: max,
+                                                    divisions: 99,
+                                                    label: value8
+                                                        .round()
+                                                        .toString(),
+                                                    onChanged: (value8) =>
+                                                        setState(() => this
+                                                            .value8 = value8),
+                                                    onChangeEnd: (value8) {
+                                                      checksavePreset();
+                                                      if (characteristic !=
+                                                          null) {
+                                                        widget.characteristic!
+                                                            .write(utf8.encode(
+                                                                'RB${value1.toStringAsFixed(0).padLeft(2, '0') + value2.toStringAsFixed(0).padLeft(2, '0') + value3.toStringAsFixed(0).padLeft(2, '0') + value4.toStringAsFixed(0).padLeft(2, '0') + value5.toStringAsFixed(0).padLeft(2, '0') + value6.toStringAsFixed(0).padLeft(2, '0') + value7.toStringAsFixed(0).padLeft(2, '0') + value8.toStringAsFixed(0).padLeft(2, '0') + value9.toStringAsFixed(0).padLeft(2, '0')}'));
+
+                                                        print(
+                                                            'RB${value1.toStringAsFixed(0).padLeft(2, '0') + value2.toStringAsFixed(0).padLeft(2, '0') + value3.toStringAsFixed(0).padLeft(2, '0') + value4.toStringAsFixed(0).padLeft(2, '0') + value5.toStringAsFixed(0).padLeft(2, '0') + value6.toStringAsFixed(0).padLeft(2, '0') + value7.toStringAsFixed(0).padLeft(2, '0') + value8.toStringAsFixed(0).padLeft(2, '0') + value9.toStringAsFixed(0).padLeft(2, '0')}');
+                                                      }
+                                                    },
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height: 10,
+                                          ),
+                                          Text(
+                                            '${value8.toInt()}',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 12,
+                                              fontFamily: 'ethnocentric',
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height: 30,
+                                          )
+                                        ],
+                                      ),
+                                      Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          RotatedBox(
+                                            quarterTurns: 3,
+                                            child: Column(
+                                              children: [
+                                                ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(40),
+                                                  child: Slider(
+                                                    value: value9,
+                                                    activeColor: Colors.white,
+                                                    min: min,
+                                                    max: max,
+                                                    divisions: 99,
+                                                    label: value9
+                                                        .round()
+                                                        .toString(),
+                                                    onChanged: (value9) =>
+                                                        setState(() => this
+                                                            .value9 = value9),
+                                                    onChangeEnd: (value9) {
+                                                      checksavePreset();
+                                                      if (characteristic !=
+                                                          null) {
+                                                        widget.characteristic!
+                                                            .write(utf8.encode(
+                                                                'RB${value1.toStringAsFixed(0).padLeft(2, '0') + value2.toStringAsFixed(0).padLeft(2, '0') + value3.toStringAsFixed(0).padLeft(2, '0') + value4.toStringAsFixed(0).padLeft(2, '0') + value5.toStringAsFixed(0).padLeft(2, '0') + value6.toStringAsFixed(0).padLeft(2, '0') + value7.toStringAsFixed(0).padLeft(2, '0') + value8.toStringAsFixed(0).padLeft(2, '0') + value9.toStringAsFixed(0).padLeft(2, '0')}'));
+
+                                                        print(
+                                                            'RB${value1.toStringAsFixed(0).padLeft(2, '0') + value2.toStringAsFixed(0).padLeft(2, '0') + value3.toStringAsFixed(0).padLeft(2, '0') + value4.toStringAsFixed(0).padLeft(2, '0') + value5.toStringAsFixed(0).padLeft(2, '0') + value6.toStringAsFixed(0).padLeft(2, '0') + value7.toStringAsFixed(0).padLeft(2, '0') + value8.toStringAsFixed(0).padLeft(2, '0') + value9.toStringAsFixed(0).padLeft(2, '0')}');
+                                                      }
+                                                    },
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height: 10,
+                                          ),
+                                          Text(
+                                            '${value9.toInt()}',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 12,
+                                              fontFamily: 'ethnocentric',
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height: 30,
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    // Center(
+                    //   child: Text(
+                    //     'send to esp RY03${value1.toStringAsFixed(0).padLeft(2, '0') + value2.toStringAsFixed(0).padLeft(2, '0') + value3.toStringAsFixed(0).padLeft(2, '0') + value4.toStringAsFixed(0).padLeft(2, '0') + value5.toStringAsFixed(0).padLeft(2, '0') + value6.toStringAsFixed(0).padLeft(2, '0') + value7.toStringAsFixed(0).padLeft(2, '0') + value8.toStringAsFixed(0).padLeft(2, '0') + value9.toStringAsFixed(0).padLeft(2, '0')}#',
+                    //     style: TextStyle(color: Colors.white),
+                    //   ),
+                    // ),
+                    // (
+
+                    Padding(
+                      padding: const EdgeInsets.all(5.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          InkWell(
+                            onTap: () {
+                              setLastPresetButton();
+                            },
+                            child: Container(
+                                height: 50,
+                                width: _width / 4.2,
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                      fit: BoxFit.fitWidth,
+                                      image: AssetImage(_stautsPreset == 0
+                                          ? "assets/image/button-preset/framecolorred.png"
+                                          : "assets/image/button-preset/framenotcolor.png")),
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      margin: EdgeInsets.symmetric(
+                                        vertical: 10,
+                                      ),
+                                      child: Image.asset(
+                                        "assets/image/button-preset/LastPreset.png",
+                                        height: 14,
+                                      ),
+                                    ),
+                                  ],
+                                )),
+                          ),
+                          InkWell(
+                            onTap: () {
+                              setPresetButton1();
+                            },
+                            child: Container(
+                                height: 50,
+                                width: _width / 4.2,
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                      fit: BoxFit.fitWidth,
+                                      image: AssetImage(_stautsPreset == 1
+                                          ? "assets/image/button-preset/framecolorred.png"
+                                          : "assets/image/button-preset/framenotcolor.png")),
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      margin: EdgeInsets.symmetric(
+                                        vertical: 10,
+                                      ),
+                                      child: Image.asset(
+                                        "assets/image/button-preset/Preset1.png",
+                                        height: 16,
+                                      ),
+                                    ),
+                                  ],
+                                )),
+                          ),
+                          InkWell(
+                            onTap: () {
+                              setPresetButton2();
+                            },
+                            child: Container(
+                                height: 50,
+                                width: _width / 4.2,
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                      fit: BoxFit.fitWidth,
+                                      image: AssetImage(_stautsPreset == 2
+                                          ? "assets/image/button-preset/framecolorred.png"
+                                          : "assets/image/button-preset/framenotcolor.png")),
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      margin: EdgeInsets.symmetric(
+                                        vertical: 10,
+                                      ),
+                                      child: Image.asset(
+                                        "assets/image/button-preset/Preset2.png",
+                                        height: 16,
+                                      ),
+                                    ),
+                                  ],
+                                )),
+                          ),
+                          // InkWell(
+                          //   onTap: () {
+                          //     setPresetButton3();
+                          //   },
+                          //   child: Container(
+                          //       width: _width / 5.5,
+                          //       decoration: BoxDecoration(
+                          //         image: DecorationImage(
+                          //             fit: BoxFit.fitWidth,
+                          //             image: AssetImage(_stautsPreset == 3
+                          //                 ? "assets/image/button-preset/framecolorred.png"
+                          //                 : "assets/image/button-preset/framenotcolor.png")),
+                          //       ),
+                          //       child: Column(
+                          //         mainAxisAlignment: MainAxisAlignment.center,
+                          //         children: [
+                          //           Container(
+                          //             margin: EdgeInsets.symmetric(
+                          //               vertical: 10,
+                          //             ),
+                          //             child: Image.asset(
+                          //               "assets/image/button-preset/Preset3.png",
+                          //               height: 12,
+                          //             ),
+                          //           ),
+                          //         ],
+                          //       )),
+                          // ),
+                          GestureDetector(
+                            onTapDown: ((details) {
+                              print('onTapDown');
+                              resetPresetButton();
+                              setState(() {
+                                _statusbuttonreset = true;
+                              });
+                            }),
+                            onTapUp: (details) {
+                              print('onTapUp');
+                              setState(() {
+                                _statusbuttonreset = false;
+                              });
+                            },
+                            child: Container(
+                                height: 50,
+                                width: _width / 4.2,
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                      fit: BoxFit.fitWidth,
+                                      image: AssetImage(_statusbuttonreset ==
+                                              true
+                                          ? "assets/image/button-preset/framecolorgreen.png"
+                                          : "assets/image/button-preset/framenotcolor.png")),
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      margin: EdgeInsets.symmetric(
+                                        vertical: 10,
+                                      ),
+                                      child: Image.asset(
+                                        "assets/image/button-preset/Reset.png",
+                                        height: 12,
+                                      ),
+                                    ),
+                                  ],
+                                )),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                        child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          height: 20,
+                        ),
+                        // IconButton(
+                        //   onPressed: () {
+                        //     setState(() {
+                        //       value1 = 10;
+                        //       value2 = 20;
+                        //       value3 = 30;
+                        //       value4 = 40;
+                        //       value5 = 50;
+                        //       value6 = 60;
+                        //       value7 = 70;
+                        //       value8 = 80;
+                        //       value9 = 90;
+                        //     });
+                        //     if (characteristic != null) {
+                        //       widget.characteristic!.write(utf8.encode(
+                        //           'RB${value1.toStringAsFixed(0).padLeft(2, '0') + value2.toStringAsFixed(0).padLeft(2, '0') + value3.toStringAsFixed(0).padLeft(2, '0') + value4.toStringAsFixed(0).padLeft(2, '0') + value5.toStringAsFixed(0).padLeft(2, '0') + value6.toStringAsFixed(0).padLeft(2, '0') + value7.toStringAsFixed(0).padLeft(2, '0') + value8.toStringAsFixed(0).padLeft(2, '0') + value9.toStringAsFixed(0).padLeft(2, '0')}'));
+                        //     }
+                        //   },
+                        //   icon: Image.asset('lib/item/reset.png'),
+                        //   iconSize: 50,
+                        // ),
+                        Center(
+                          child: Text(
+                            'โหมดจูนกราฟ DIY',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontFamily: 'Kanit'),
+                          ),
+                        ),
+                        Center(
+                          child: Text(
+                            'กำลังทำงานสามารถปรับแต่งคันเร่งช่วงต้นและช่วงปลายได้ตามความต้องการ',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 10,
+                                fontFamily: 'Kanit'),
+                          ),
+                        ),
+                      ],
+                    )),
+                  ],
+                ),
+              ),
+            ),
+            Wrap(
+              children: [
+                IconButton(
+                  onPressed: () {
+                    if (characteristic != null) {
+                      widget.characteristic!.write(utf8.encode('RY00#'));
+                    } else {
+                      Navigator.push(
+                          context,
+                          PageTransition(
+                            type: PageTransitionType.fade,
+                            child: page1(
+                              characteristic: widget.characteristic,
+                              device: widget.device,
+                            ),
+                          ));
+                    }
+                  },
+                  icon: Image.asset('lib/img/icon1.png'),
+                  iconSize: 70,
+                ),
+                IconButton(
+                  onPressed: () {
+                    if (characteristic != null) {
+                      widget.characteristic!.write(utf8.encode('RY01#'));
+                    } else {
+                      Navigator.push(
+                          context,
+                          PageTransition(
+                            type: PageTransitionType.fade,
+                            child: page2(
+                                characteristic: widget.characteristic,
+                                device: widget.device),
+                          ));
+                    }
+                  },
+                  icon: Image.asset('lib/img/icon2.png'),
+                  iconSize: 70,
+                ),
+                IconButton(
+                  onPressed: () {
+                    if (characteristic != null) {
+                      widget.characteristic!.write(utf8.encode('RY02#'));
+                    } else {
+                      Navigator.push(
+                          context,
+                          PageTransition(
+                            type: PageTransitionType.fade,
+                            child: page3(
+                                value: '0',
+                                characteristic: widget.characteristic,
+                                device: widget.device),
+                          ));
+                    }
+                  },
+                  icon: Image.asset('lib/img/icon3.png'),
+                  iconSize: 70,
+                ),
+                IconButton(
+                  onPressed: () {
+                    // widget.characteristic!.write(utf8.encode('RY03#'));
+
+                    // Navigator.push(
+                    //     context,
+                    //     MaterialPageRoute(
+                    //         builder: (context) => page4(
+                    //               characteristic: widget.characteristic,
+                    //               value1: 0,
+                    //               value3: 0,
+                    //               value2: 0,
+                    //               value4: 0,
+                    //               value5: 0,
+                    //               value6: 0,
+                    //               value7: 0,
+                    //               value8: 0,
+                    //               value9: 0,
+                    //             )));
+                  },
+                  icon: Image.asset('lib/img/icon4.1.png'),
+                  iconSize: 70,
+                ),
+                IconButton(
+                  onPressed: () {
+                    if (characteristic != null) {
+                      widget.characteristic!.write(utf8.encode('RY04#'));
+                    } else {
+                      Navigator.push(
+                          context,
+                          PageTransition(
+                            type: PageTransitionType.fade,
+                            child: page5(
+                                characteristic: widget.characteristic,
+                                device: widget.device),
+                          ));
+                    }
+                  },
+                  icon: Image.asset('lib/img/icon5.png'),
+                  iconSize: 70,
+                ),
+                IconButton(
+                  onPressed: () {
+                    if (characteristic != null) {
+                      widget.characteristic!.write(utf8.encode('RY05#'));
+                    } else {
+                      Navigator.push(
+                          context,
+                          PageTransition(
+                            type: PageTransitionType.fade,
+                            child: page6(
+                                characteristic: widget.characteristic,
+                                device: widget.device),
+                          ));
+                    }
+                  },
+                  icon: Image.asset('lib/img/icon6.png'),
+                  iconSize: 70,
+                ),
+                IconButton(
+                  onPressed: () {
+                    if (characteristic != null) {
+                      widget.characteristic!.write(utf8.encode('RY06#'));
+                    } else {
+                      Navigator.push(
+                          context,
+                          PageTransition(
+                            type: PageTransitionType.fade,
+                            child: page7(
+                                characteristic: widget.characteristic,
+                                value: 0,
+                                value1: 0,
+                                value2: 0,
+                                value3: 0,
+                                device: widget.device),
+                          ));
+                    }
+                  },
+                  icon: Image.asset('lib/img/icon7.png'),
+                  iconSize: 70,
+                ),
+                IconButton(
+                  onPressed: () {
+                    if (characteristic != null) {
+                      widget.characteristic!.write(utf8.encode('RY07#'));
+                    } else {
+                      Navigator.push(
+                          context,
+                          PageTransition(
+                            type: PageTransitionType.fade,
+                            child: page8(
+                                characteristic: widget.characteristic,
+                                value1: 0,
+                                value2: 0,
+                                device: widget.device),
+                          ));
+                    }
+                  },
+                  icon: Image.asset('lib/img/icon8.png'),
+                  iconSize: 70,
+                ),
+                IconButton(
+                  onPressed: () {
+                    if (characteristic != null) {
+                      widget.characteristic!.write(utf8.encode('RY08#'));
+                    } else {
+                      Navigator.push(
+                          context,
+                          PageTransition(
+                            type: PageTransitionType.fade,
+                            child: page9(
+                                characteristic: widget.characteristic,
+                                value1: 0,
+                                device: widget.device),
+                          ));
+                    }
+                  },
+                  icon: Image.asset('lib/img/icon9.png'),
+                  iconSize: 70,
+                ),
+                IconButton(
+                  onPressed: () {
+                    // if (characteristic != null) {
+                    //   // widget.characteristic!.write(utf8.encode('RY08#'));
+                    // } else {
+
+                    // }
+                    Navigator.push(
+                        context,
+                        PageTransition(
+                          type: PageTransitionType.fade,
+                          child: page10(
+                              characteristic: widget.characteristic,
+                              value1: '',
+                              device: widget.device),
+                        ));
+                  },
+                  icon: Image.asset('lib/img/icon10.png'),
+                  iconSize: 70,
+                ),
+                Container(
+                  width: _width * 0.45,
+                  height: _height / 9,
+                  child: Stack(children: [
+                    Image.asset(
+                      'assets/image/max-speed/frame.png',
+                      height: 70,
+                    ),
+                    Positioned(
+                      top: _width * 0.035,
+                      right: _width * 0.33,
+                      child: Obx(
+                        () => Text(
+                          '${speedController.speed}',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'ethnocentric',
+                          ),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      top: _width * 0.08,
+                      right: _width * 0.33,
+                      child: Obx(
+                        () => Text(
+                          '${speedController.max_speed}',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'ethnocentric',
+                          ),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      top: _width * 0.045,
+                      left: _width * 0.15,
+                      child: Text(
+                        'Km/hr',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Kanit',
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      top: _width * 0.09,
+                      left: _width * 0.15,
+                      child: const Text(
+                        'MAX SPEED',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Kanit',
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      height: 30,
+                      top: _width * 0.04,
+                      left: _width * 0.33,
+                      child: Obx(() => Image.asset(
+                            'assets/image/max-speed/alert${speedController.status_speed}.png',
+                          )),
+                    ),
+                  ]),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
+
+
+
+
+/// backup 
+// /InkWell(
+                          //   onTap: () {
+                          //     setPresetButton1();
+                          //   },
+                          //   child: Container(
+                          //       height: 40,
+                          //       width: _width / 4.5,
+                          //       decoration: BoxDecoration(
+                          //         image: DecorationImage(
+                          //             fit: BoxFit.fitWidth,
+                          //             image: AssetImage(_stautsPreset == 1
+                          //                 ? "assets/image/button-preset/framecolorred.png"
+                          //                 : "assets/image/button-preset/framenotcolor.png")),
+                          //       ),
+                          //       child: Column(
+                          //         mainAxisAlignment: MainAxisAlignment.center,
+                          //         children: [
+                          //           Stack(
+                          //             children: [
+                          //               // Align(
+                          //               //   child: Container(
+                          //               //     child: Image.asset(
+                          //               //       _stautsPreset == 1
+                          //               //           ? "assets/image/button-preset/colorred.png"
+                          //               //           : "assets/image/button-preset/colorblack.png",
+                          //               //       height: 29,
+                          //               //     ),
+                          //               //   ),
+                          //               // ),
+                          //               Align(
+                          //                 child: Container(
+                          //                   margin: EdgeInsets.symmetric(
+                          //                     vertical: 10,
+                          //                   ),
+                          //                   child: Image.asset(
+                          //                     "assets/image/button-preset/Preset1.png",
+                          //                     height: 10,
+                          //                   ),
+                          //                 ),
+                          //               ),
+                          //             ],
+                          //           ),
+                          //         ],
+                          //       )),
+                          // ),
